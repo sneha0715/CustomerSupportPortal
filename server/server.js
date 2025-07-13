@@ -4,6 +4,7 @@ import express from "express"
 import connectDB from "./config/db.js"
 import { handleError } from "./middlewares/errorhandler.js"
 import userRoutes from "./routes/user.routes.js"
+import ticketRoutes from "./routes/ticket.routes.js"
 import cookieParser from "cookie-parser"
 
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 app.use('/api/user', userRoutes)
+app.use('/api/ticket',ticketRoutes)
 
 
 app.listen(process.env.PORT, () => {

@@ -22,6 +22,11 @@ const ticketSchema = new mongoose.Schema(
          ref: "User",
          required: true,
       },
+      product: {
+         type:String,
+         enum:["Shravan","Sneha"],
+         required:true,
+      }
    },
    { timestamps: true }
 );
