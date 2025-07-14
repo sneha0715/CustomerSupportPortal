@@ -5,12 +5,12 @@ import mongoose from "mongoose";
  */
 const noteSchema = new mongoose.Schema(
    {
-      userID: {
+      userId: {
          type: mongoose.Schema.Types.ObjectId,
          ref: "User",
          required: true,
       },
-      ticketID: {
+      ticketId: {
          type: mongoose.Schema.Types.ObjectId,
          ref: "Ticket",
          required: true,

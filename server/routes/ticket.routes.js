@@ -1,10 +1,15 @@
-import {addTicket , viewTicket,deleteTicket} from "../controllers/ticket.controller.js"
+import { addTicket, viewTicket, deleteTicket } from "../controllers/ticket.controller.js"
 import authMiddleware from "../middlewares/authMiddleware.js";
 import express from "express";
-const routes=express.Router();
+import { body, param } from "express-validator";
+const routes = express.Router();
 
-routes.post("/",authMiddleware,addTicket);
-routes.get("/:ticketId",authMiddleware,viewTicket);
-routes.delete("/:ticketId",authMiddleware,deleteTicket);
+const validateTicketId = [
+    param("ticketId").isMongoId().withMessage("Invalid Ticket ID"),
+];
+
+routes.post("/", authMiddleware, addTicket);
+routes.get("/:ticketId", authMiddleware,validateTicketId, viewTicket);
+routes.delete("/:ticketId", authMiddleware,validateTicketId, deleteTicket);
 
 export default routes

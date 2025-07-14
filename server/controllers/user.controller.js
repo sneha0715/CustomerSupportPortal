@@ -1,8 +1,17 @@
 import catchAsyncErrors from '../middlewares/catchAsyncErrors.js';
 import User from '../models/users.js';
 import ErrorHandler from '../middlewares/errorhandler.js';
+import { validationResult } from "express-validator";
 
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
+
+
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+   }
+
+
    const { fullname, email, password } = req.body;
    if (!fullname || !email || !password)
       return next(new ErrorHandler("Credentilas are required", 404))
@@ -31,10 +40,17 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
 })
 
 export const loginUser = catchAsyncErrors(async (req, res, next) => {
-   const { email, password } = req.body;
-   if (!email || !password) {
-      return next(new ErrorHandler("Credentials are required", 404))
+
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
    }
+
+
+   const { email, password } = req.body;
+   // if (!email || !password) {
+   //    return next(new ErrorHandler("Credentials are required", 404))
+   // }
 
    const user = await User.findOne({ email }).select('+password')
 
@@ -46,7 +62,7 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
    const isPasswordMatched = await user.comparePassword(password)
 
    if (!isPasswordMatched) {
-      return next(new ErrorHandler("Password not matched", 404))
+      return next(new ErrorHandler("Incorrect Password", 404))
    }
    const token = await user.generateToken();
    res.cookie('token', token)
