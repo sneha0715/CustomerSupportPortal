@@ -1,11 +1,13 @@
 import ErrorHandler from "../middlewares/errorhandler.js";
 import Ticket from "../models/ticket.js";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
+import { validationResult } from "express-validator";
 
 export const addTicket = catchAsyncErrors(async (req, res, next) => {
-
+    
     const userId = req.user.id;
     const { title, description, product } = req.body;
+
     if (!title || !description || !product) {
         return next(new ErrorHandler("Credentials not found", 404));
     }
@@ -49,6 +51,21 @@ export const viewTicket = catchAsyncErrors(async (req, res, next) => {
 
 })
 
+export const viewTickets = catchAsyncErrors(async (req, res, next) => {
+  const userId = req.user.id;
+  const tickets = await Ticket.find({ userId }).populate({
+    path: "userId",
+    select: "-password",
+  });
+  if (!tickets) {
+    return next(new ErrorHandler("No tickets found", 404));
+  }
+  res.status(200).json({
+    tickets,
+    message: "Tickets fetched successfully",
+  });
+});
+
 export const deleteTicket = catchAsyncErrors(async (req, res, next) => {
 
 
@@ -73,3 +90,26 @@ export const deleteTicket = catchAsyncErrors(async (req, res, next) => {
         message: "ticket deleted"
     })
 })
+export const updateTicketStatus = catchAsyncErrors(async (req, res, next) => {
+  const ticketId = req.params.ticketId;
+  const userId = req.user.id;
+
+  const ticket = await Ticket.findById(ticketId);
+  if (!ticket) {
+    return next(new ErrorHandler("ticket not found", 404));
+  }
+  if (ticket.userId.toString() !== userId.toString()) {
+    return next(
+      new ErrorHandler("You are not authorized to update this ticket", 401)
+    );
+  }
+  if (ticket.status === "closed") {
+    return next(new ErrorHandler("Ticket is already closed", 400));
+  }
+  ticket.status = "closed";
+  await ticket.save();
+  res.status(200).json({
+    ticket,
+    message: "Ticket updated",
+  });
+});

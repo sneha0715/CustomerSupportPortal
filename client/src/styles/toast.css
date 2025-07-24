@@ -1,0 +1,10 @@
+.sonner-container {
+  width: 26%;
+  font-family: "Futura";
+}
+
+@media screen and (max-width: 486px) {
+  .sonner-container {
+    width: 100%;
+  }
+}

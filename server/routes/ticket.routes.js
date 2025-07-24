@@ -1,4 +1,4 @@
-import { addTicket, viewTicket, deleteTicket } from "../controllers/ticket.controller.js"
+import { addTicket, viewTicket, deleteTicket ,viewTickets ,updateTicketStatus} from "../controllers/ticket.controller.js"
 import authMiddleware from "../middlewares/authMiddleware.js";
 import express from "express";
 import { body, param } from "express-validator";
@@ -11,5 +11,6 @@ const validateTicketId = [
 routes.post("/", authMiddleware, addTicket);
 routes.get("/:ticketId", authMiddleware,validateTicketId, viewTicket);
 routes.delete("/:ticketId", authMiddleware,validateTicketId, deleteTicket);
-
+routes.get("/",authMiddleware, viewTickets);
+routes.patch("/status/:ticketId", authMiddleware, validateTicketId, updateTicketStatus);
 export default routes

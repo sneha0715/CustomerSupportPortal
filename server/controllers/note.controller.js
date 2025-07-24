@@ -18,6 +18,12 @@ export const createNote = catchAsyncErrors(async (req, res, next) => {
     }
 
     const ticket = await Ticket.findById(ticketId)
+    if(!ticket){
+        return next(new ErrorHandler("Ticket not found", 404));
+    }
+    if(ticket.status ==="closed"){
+        return next(new ErrorHandler("Ticket is closed, you cannot make note", 404));
+    }
     if (ticket.userId.toString() != userId.toString()) {
         return next(new ErrorHandler("Not authorize for making note", 404))
     }

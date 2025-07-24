@@ -24,7 +24,7 @@ const ticketSchema = new mongoose.Schema(
       },
       product: {
          type:String,
-         enum:["Shravan","Sneha"],
+         enum:["iPhone 14","iPhone 15","iPhone 16","AirBook","Mac M4"],
          required:true,
       }
    },

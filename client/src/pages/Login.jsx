@@ -1,20 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Header from "../components/Header";
 import { useTheme } from "../context/Theme";
+import { useAuthServices } from "../services/api/useAuthServices";
+import { validateLoginFormData } from "../utils/validations";
+import { Link, useLocation } from "react-router-dom";
 
+const initialFormData = {
+  email: "",
+  password: "",
+};
 const Login = () => {
-
-  const { theme } = useTheme()
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
+  const location = useLocation();
+  const { theme } = useTheme();
+  const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState("");
 
   const handleChanges = (e) => {
@@ -25,131 +23,103 @@ const Login = () => {
     }));
   };
 
-  const submitHandler = (e) => {
+  const { loginUser, loading, error } = useAuthServices();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setErrors("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setErrors("Password must be at least 8 characters");
-      return;
-    }
-
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
-      setErrors("Password must contain a special character");
-      return;
-    }
-
+    const validationError = validateLoginFormData(formData);
+    if (validationError) return setErrors(validationError);
     setErrors("");
 
-    toast.success("Login Successful ✅", {
-      position: "top-right",
-      autoClose: 3000,
-      theme: "dark",
-    });
-
-    setFormData({
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+    await loginUser(formData);
+    setFormData(initialFormData);
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-foreground flex items-center justify-center font-Poppins">
-        <Header />
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-4xl bg-card border-2 border-card-foreground mt-10 backdrop-blur-md shadow-2xl rounded-4xl overflow-hidden flex flex-col md:flex-row"
-        >
-          {/* Right Form Section */}
-          <div className="w-full md:w-1/2 bg-card px-10 py-6">
-            <h2 className="text-3xl font-bold text-foreground text-center pb-2">
-              LOGIN
-            </h2>
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className={`w-full h-[90vh] mt-12 pb-8 md:pb-0 backdrop-blur-md  rounded-t-4xl  overflow-hidden flex flex-col items-center justify-end md:justify-center md:flex-row  ${
+        theme === "dark" ? "bg-background" : ""
+      }`}
+    >
+      <div className="w-full md:w-1/2  backdrop-blur-sm px-5  md:px-18 ">
+        <h2 className="text-3xl font-bold px-3 ">LOGIN</h2>
+        <form onSubmit={submitHandler} className="mt-4 space-y-3">
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            type="email"
+            name="email"
+            placeholder=" e.g: john@support.com "
+            value={formData.email}
+            onChange={handleChanges}
+            className="input-field"
+          />
 
-            <form onSubmit={submitHandler} className="mt-8 space-y-3">
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            type="password"
+            name="password"
+            placeholder="* * * * * * * *"
+            value={formData.password}
+            onChange={handleChanges}
+            className="input-field"
+          />
 
+          {errors && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-red-500 text-center text-sm font-medium"
+            >
+              ⚠ {errors}
+            </motion.p>
+          )}
 
-              <motion.input
-                whileFocus={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChanges}
-                className="w-full px-4 py-3 bg-card border-2 border-card-foreground text-foreground placeholder-muted-foreground rounded-full focus:border-none focus:outline-none focus:ring-2 focus:ring-emerald-600"
-                required
-              />
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            type="submit"
+            className="auth-button"
+          >
+            {loading ? "Loading..." : "  Login →"}
+          </motion.button>
+        </form>
 
-              <motion.input
-                whileFocus={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChanges}
-                className="w-full px-4 py-3 bg-card border-2 border-card-foreground text-foreground placeholder-muted-foreground rounded-full focus:border-none focus:outline-none focus:ring-2 focus:ring-emerald-600"
-                required
-              />
-
-
-
-              {errors && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-center text-sm font-medium"
-                >
-                  ⚠️ {errors}
-                </motion.p>
-              )}
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 200 }}
-                type="submit"
-                className="w-full py-3 bg-foreground text-background font-semibold rounded-full shadow-lg mt-3"
-              >
-                Login →
-              </motion.button>
-            </form>
-
-            <p className="text-sm text-foreground text-center mt-4">
-              Don’t have an account?
-              <a href="#" className="text-emerald-600 hover:text-pink-300">
-                {" "}
-                Sign Up
-              </a>
-            </p>
-          </div>
-
-          {/* Image Side Section */}
-          <div className="hidden md:flex w-1/2 items-center justify-center bg-card p-24 relative">
-            {theme === "dark" ? <img
-              src="/image3.svg"
-              alt="Login Illustration"
-              className="w-full object-contain rounded-2xl shadow-lg"
-            /> :
-              <img
-                src="/image2.svg"
-                alt="Login Illustration"
-                className="w-full object-contain rounded-2xl shadow-lg"
-              />}
-          </div>
-        </motion.div>
-        <ToastContainer />
+        <p className="text-sm text-foreground text-center mt-4">
+          Don’t have an account ?
+          <Link
+            to="/signUp"
+            state={{ from: location.state?.from }}
+            className="text-teal-800 hover:text-muted-foreground font-semibold ml-1 transition-all duration-200 ease-in-out"
+          >
+            {" "}
+            Sign Up
+          </Link>
+        </p>
       </div>
-    </>
+
+      {/* Image Side Section */}
+      <div className="hidden md:flex w-1/2 items-center justify-center p-40 relative">
+        {theme === "dark" ? (
+          <img
+            src="/image3.svg"
+            alt="illustration"
+            className="w-full object-cover rounded-2xl "
+          />
+        ) : (
+          <img
+            src="/image3.svg"
+            alt="illustration"
+            className="w-full object-cover rounded-2xl "
+          />
+        )}
+      </div>
+    </motion.div>
   );
 };
 
