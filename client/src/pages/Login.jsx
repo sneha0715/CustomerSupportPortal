@@ -41,7 +41,7 @@ const Login = () => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`w-full h-[90vh] mt-12 pb-8 md:pb-0 backdrop-blur-md  rounded-t-4xl  overflow-hidden flex flex-col items-center justify-end md:justify-center md:flex-row  ${
+      className={`w-full h-[90vh] mt-12 pb-8 md:pb-0 backdrop-blur-md  rounded-t-4xl  overflow-hidden flex flex-col items-center justify-center md:justify-center md:flex-row  ${
         theme === "dark" ? "bg-background" : ""
       }`}
     >
