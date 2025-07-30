@@ -25,7 +25,7 @@ import BackButton from "@/components/BackButton";
 
 const ViewTickets = () => {
   const [tickets, setTickets] = useState([]);
-  const { viewTickets } = useTicketServices();
+  const { viewTickets,loading } = useTicketServices();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -76,6 +76,16 @@ const ViewTickets = () => {
   const handleViewTicket = (id) => {
     navigate(`/ticket/${id}`);
   };
+  if(loading){
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading tickets</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className=" min-h-screen px-4 md:px-6  mt-2 pb-8 lg:px-15 ">

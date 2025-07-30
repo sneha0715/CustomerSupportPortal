@@ -15,6 +15,7 @@ export const useAuthServices = (formData, redirectLocation = null) => {
       method: "POST",
       endpoint: "/user/register",
       body: formData,
+      redirectTo: "/",
     });
 
     if (response.status === 201 && response.data.token) {
