@@ -12,7 +12,7 @@ import express from "express"
 const app = express()
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [process.env.LOCAL_URL, process.env.PRODUCTON_URL],
     credentials: true,
   })
 );
@@ -24,11 +24,11 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get("/", (req, res) => {
-   res.send("test success")
+  res.send("test success")
 })
 
 app.listen(process.env.PORT, () => {
-   console.log("server is listening on port 3000")
+  console.log(`server is listening on port ${process.env.PORT}`)
 })
 
 import userRoutes from "./routes/user.routes.js"
