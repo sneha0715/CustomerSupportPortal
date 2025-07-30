@@ -12,7 +12,7 @@ import express from "express"
 const app = express()
 app.use(
   cors({
-    origin: [process.env.LOCAL_URL, process.env.PRODUCTON_URL],
+    origin: process.env.PRODUCTION_URL || process.env.LOCAL_URL,
     credentials: true,
   })
 );
